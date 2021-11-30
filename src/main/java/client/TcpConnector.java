@@ -52,8 +52,8 @@ abstract public class TcpConnector  {
 	}
 	
 	protected void buildExecutors() {
-		// Создать исполнителей потока здесь вместо использования по умолчанию, 
-        //что удобно для регистрации информации доступа к инъекции MDC
+	// Create thread executors here instead of using the default, 
+        //which is handy for logging MDC injection access information
 		connectorExecutor = new MyThreadPoolExecutor(1);
 		ioExecutor = new MyThreadPoolExecutor(coreSize);
 	}
@@ -62,9 +62,9 @@ abstract public class TcpConnector  {
 	protected byte[] doExecute(IoSession session, byte[] message, Object...args) throws Exception {
 		DefaultReadFuture readFuture = new DefaultReadFuture(session);
 		handler.addReadFuture(session, readFuture);
-		// Отправить запрос 
+		// Send request 
 		sendRequest(session, message);
-		// Читать ответный пакет
+		// Read response packet
 		//ReadFuture readFuture_ = session.read();
 		int timeout = args.length > 0 ? (Integer)args[0] : (Integer)rule.get("timeout")!=null?(Integer)rule.get("timeout"):10000;
 		return recvResponse(readFuture, timeout);
@@ -83,7 +83,7 @@ abstract public class TcpConnector  {
 	}
 
 	protected byte[] recvResponse(ReadFuture readFuture, int timeout) throws Exception  {
-		// Время ожидания чтения истекло
+		// Read timed out
 		byte[] ret = {30};
 		return ret;
 		
@@ -96,7 +96,8 @@ abstract public class TcpConnector  {
 			throw new Exception("Remote TCP server data exception received");
 		}
 		
-		Object ret = "OK";readFuture.getMessage();
+		Object ret = "OK";
+		readFuture.getMessage();
 		if (logger.isInfoEnabled())
 			logger.info("TcpConnector RECEIVED:\r\n" + new String((byte[])ret));
 		return (byte[]) ret;*/
@@ -127,7 +128,7 @@ abstract public class TcpConnector  {
 		IoProcessor<NioSession> processor = 
 				new SimpleIoProcessorPool<NioSession>(NioProcessor.class, /*ioExecutor,*/ coreSize);
 		connector = new NioSocketConnector(connectorExecutor, processor);
-		connector.setConnectTimeoutMillis((Integer) rule.get("timeout")); // Установите время ожидания соединения. 
+		connector.setConnectTimeoutMillis((Integer) rule.get("timeout")); // Set connection timeout. 
                 //Cмотреть AbstractPollingIoConnector.processTimedOutSessions() С классом ConnectionRequest
 		// connector.getSessionConfig().setUseReadOperation(true); //
 		// Вы также можете использовать этот метод для синхронной отправки и получения данных, 
@@ -153,7 +154,7 @@ abstract public class TcpConnector  {
 		protected void beforeExecute(Thread t, Runnable r) {
 			String GROUP_KEY = "GROUP_KEY";
 			Object group = MDC.get(GROUP_KEY);
-			// Привязать имя группы к текущему контексту потока log4j
+			// Bind group name to current thread context log4j
 			Hashtable<?, ?> ht = MDC.getContext();
 			if (ht != null)
 				ht.clear();
