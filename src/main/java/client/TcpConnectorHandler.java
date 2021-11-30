@@ -14,8 +14,8 @@ public class TcpConnectorHandler extends IoHandlerAdapter {
 	
 	private final static Logger logger = Logger.getLogger(TcpConnectorHandler.class);
 	
-	/**Назначение обработчиков - обработка многопоточного параллелизма с использованием обработчика, 
-        но для каждого соединения есть ReadFuture*/
+	/**The purpose of handlers is to handle multithreaded parallelism using a handler,
+         but for every connection there is ReadFuture*/
 	protected Map<IoSession, ReadFuture> handlers = new ConcurrentHashMap<IoSession, ReadFuture>();
 
 	
@@ -29,7 +29,7 @@ public class TcpConnectorHandler extends IoHandlerAdapter {
         logger.info("TcpConnector sessionOpened:" + session.getId());
     }
 
-    // После того как исключение поймано, текущий будущий поток автоматически выполняется.
+    // After the exception is caught, the current future thread is automatically executed.
     public void exceptionCaught(IoSession session, Throwable t){
     	logger.error("TcpConnector exceptionCaught:" + session.getId(), t);
     	ReadFuture future = getReadFuture(session);
@@ -41,8 +41,8 @@ public class TcpConnectorHandler extends IoHandlerAdapter {
     public void sessionClosed(IoSession session) {
         logger.info("TcpConnector sessionClosed:" + session.getId() +" total " + session.getReadBytes() + " byte(s)");
         ReadFuture future = null;
-    	// Возможно, удаленный хост закрыл соединение, но сокет клиента не получил данные, 
-        //поэтому здесь нужно сгенерировать исключение
+    	// The remote host may have closed the connection, but the client socket did not receive data, 
+        //so an exception needs to be thrown here
     	future = getReadFuture(session);
     	if (future != null) {
     		//logger.info("Remote TCP server closed connection");	
@@ -60,8 +60,8 @@ public class TcpConnectorHandler extends IoHandlerAdapter {
     }
 
     public void messageReceived(IoSession session, Object message) {
-    	// Журналы помещаются в TcpConnector, чтобы избежать того, 
-        //к какому потоку доступа относится журнал, так как соединитель использует пул потоков.
+    	// Logs are placed in TcpConnector to avoid, 
+        //which access thread the log belongs to because the connector uses a thread pool.
         if (logger.isInfoEnabled())
     		logger.info("TcpConnector RECEIVED: " + new String((byte[]) message));
     //	logger.debug("TcpConnector RECEIVED:" + session.getId());
