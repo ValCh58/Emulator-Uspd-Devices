@@ -62,7 +62,7 @@ public class JobTime implements Runnable {
 	 * @return strBuild
 	 */
 	private String dataToServer() {
-		StringBuffer strBuff = new StringBuffer("KARAT(20480,,)"//Теплосчетчик
+		StringBuffer strBuff = new StringBuffer("KARAT(20480,,)"//Hot meter
 				+ "5002(CE301v11.8s4)"
 				+ "5003(000000000000)" //Device number
 				+ "0001()" //date / time day of the week, day, month, year, hour, minutes, seconds, 2 characters for each parameter
