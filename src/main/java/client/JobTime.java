@@ -20,7 +20,7 @@ public class JobTime implements Runnable {
 		this.numUspd = numUspd;
 		this.ipAdr = ipadr;
 		this.port = port;
-		this.coeff += coeFF;//Для создания разного расхода
+		this.coeff += coeFF;//To change the flow rate for all sensors
 	}
 	
 	
@@ -51,34 +51,34 @@ public class JobTime implements Runnable {
         byte[] message_1 = str.getBytes();
         byte[] message = new byte[message_1.length +3];
         System.arraycopy(message_1, 0, message, 1, message_1.length);
-        System.arraycopy(tmp, 0, message, 0, 1);//Запись байта \02 в позиции  == 0
-        System.arraycopy(tmp, 1, message, message.length-2, 2);//запись маркера конца сообщений \02\03
+        System.arraycopy(tmp, 0, message, 0, 1);//Writing byte \ 02 at position == 0
+        System.arraycopy(tmp, 1, message, message.length-2, 2);//write end of message marker \ 02 \ 03
         connector.execute(message, new Object[0]);
 
     }
 	//java -jar uspdemulator-1.0.jar 10.0.0.8 8880 103 113 60
 	/**
-	 * Строка передачи на УСПД 
+	 * Transfer string to USPD 
 	 * @return strBuild
 	 */
 	private String dataToServer() {
 		StringBuffer strBuff = new StringBuffer("KARAT(20480,,)"//Теплосчетчик
 				+ "5002(CE301v11.8s4)"
-				+ "5003(000000000000)" //Номер прибора
-				+ "0001()" //дата/время  день недели, число, месяц, год, час, минуты, секунды, по 2 знака на каждый параметр
-				+ "1001()()"//Эл. счетчик дневной тариф, ночной
-				+ "USPD()A000()()(0)(0)(0)(0)(0)(0)"//Счетчики воды: 1 канал ХВ, 2 канал ГВ
-				+ "Inp(00)Out(00)Power(4.16)LowPower(0)AlrCnt(00)ErrIn(00)");//Диагностика УСПД и аварии
-		buildStr(strBuff, numUspd, "5003(000000000000");//№ эл счетчика
-		buildStr(strBuff, getDataTimeElectro(), "0001(");//Дата время от эл. сч. 
-		buildStr(strBuff, electroConsum(10, 163000000), "1001()(");//показания ночной тариф
-		buildStr(strBuff, electroConsum(9, 163000000), "1001(");  //показания дневной тариф
-		buildStr(strBuff, getTimeDateHeater(), "KARAT(20480,,"); //Дата время тепл. сч.
-		buildStr(strBuff, heaterConsum(this.coeff), "KARAT(20480,");// Показания тепл. сч.
-		buildStr(strBuff, numUspd, "KARAT(20480");//№ теплосчетчика
-		buildStr(strBuff, numUspd, "USPD(");//№ УСПД
-		buildStr(strBuff, waterConsum(this.coeff), "A000()(");// СХВ
-		buildStr(strBuff, waterConsum(this.coeff/2), "A000(");  //СГВ
+				+ "5003(000000000000)" //Device number
+				+ "0001()" //date / time day of the week, day, month, year, hour, minutes, seconds, 2 characters for each parameter
+				+ "1001()()"//Electric meter day rate, night
+				+ "USPD()A000()()(0)(0)(0)(0)(0)(0)"//Water meters: 1 channel Cold Water, 2 channel Hot Water
+				+ "Inp(00)Out(00)Power(4.16)LowPower(0)AlrCnt(00)ErrIn(00)");//Diagnostics of USPD and accidents
+		buildStr(strBuff, numUspd, "5003(000000000000");//Electric meter number
+		buildStr(strBuff, getDataTimeElectro(), "0001(");//Date Time Electric meter  
+		buildStr(strBuff, electroConsum(10, 163000000), "1001()(");//night rate readings
+		buildStr(strBuff, electroConsum(9, 163000000), "1001(");  //daily rate readings
+		buildStr(strBuff, getTimeDateHeater(), "KARAT(20480,,"); //Date Time Hot meter
+		buildStr(strBuff, heaterConsum(this.coeff), "KARAT(20480,");// Data Hot meter
+		buildStr(strBuff, numUspd, "KARAT(20480");//Hot meter number
+		buildStr(strBuff, numUspd, "USPD(");//USPD number
+		buildStr(strBuff, waterConsum(this.coeff), "A000()(");// Cold water
+		buildStr(strBuff, waterConsum(this.coeff/2), "A000(");  //Hot water
         return strBuff.toString();
 	}
 	
@@ -127,8 +127,8 @@ public class JobTime implements Runnable {
 	public static RecvPacketRuleCfg getRecvPacketRuleOfEndChar2() {
         RecvPacketRuleCfg rule = new RecvPacketRuleCfg();
         rule.setType(TcpConstants.RecvPacketRuleConstants.TYPE_ENDCHAR_2);
-        rule.set("endChar1", "0X03");//Предпоследний байт посылки
-        rule.set("endChar2", "0X02");//Последний байт посылки
+        rule.set("endChar1", "0X03");//The penultimate byte of the package
+        rule.set("endChar2", "0X02");//The last byte of the message
         //rule.set("escapeChar", "\\");
         return rule;
     }
