@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Конфигурация правил получения пакетов, поддержка расширенных атрибутов
+ * Packet receiving rules configuration, extended attributes support
  */
 public class RecvPacketRuleCfg {
 
