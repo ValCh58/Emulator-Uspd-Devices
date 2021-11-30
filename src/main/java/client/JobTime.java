@@ -25,7 +25,7 @@ public class JobTime implements Runnable {
 	
 	
     /**
-	 * Старт клиента
+	 * Client start
 	 * @param numUspd
 	 */
 	public void run() {
